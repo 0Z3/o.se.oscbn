@@ -19,10 +19,12 @@ MOD_FILES=\
 	$(BASENAME)Parser\
 	ose_$(BASENAME)
 
-ANTLR4_DIR=$(OSE_DIR)/../antlr4
-ANTLR4_RUNTIME_DIR=$(ANTLR4_DIR)/runtime/Cpp/runtime
+ANTLR4_DIR=../lib/antlr4
+ANTLR4_RUNTIME_DIR=$(ANTLR4_DIR)/runtime/Cpp
+ANTLR4_INCLUDE_DIR=$(ANTLR4_RUNTIME_DIR)/run/usr/local/include/antlr4-runtime
+ANTLR4_LIB_DIR=$(ANTLR4_RUNTIME_DIR)/run/usr/local/lib
 
-INCLUDES=-I. -I$(OSE_DIR) -I$(ANTLR4_RUNTIME_DIR)/src
+INCLUDES=-I. -I$(OSE_DIR) -I$(ANTLR4_INCLUDE_DIR)
 
 DEFINES=-DHAVE_OSE_ENDIAN_H
 
@@ -47,15 +49,15 @@ $(MOD_FILES:=.o): %.o: %.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 ose_$(BASENAME).so: $(OSE_FILES:=.o) $(MOD_FILES:=.o)
-	$(CPP) -shared -o $@ $^ $(ANTLR4_RUNTIME_DIR)/libantlr4-runtime.a
+	$(CPP) -shared -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
 
 $(OSE_DIR)/sys/ose_endian.h:
 	cd $(OSE_DIR) && $(MAKE) sys/ose_endian.h
 
 oscbntest: oscbntest.cpp $(OSE_FILES:=.o) $(MOD_FILES:=.o)
-	$(CPP) $(CPPFLAGS_DEBUG) $(INCLUDES) $(DEFINES) -o $@ $^ $(ANTLR4_RUNTIME_DIR)/libantlr4-runtime.a
+	$(CPP) $(CPPFLAGS_DEBUG) $(INCLUDES) $(DEFINES) -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
 
-ANTLR4=java -jar /usr/local/lib/antlr-4.9.1-complete.jar
+ANTLR4=java -jar /usr/local/lib/antlr-4.9.3-complete.jar
 .PHONY: antlr
 antlr: 
 	$(ANTLR4) -Dlanguage=Cpp -visitor -no-listener $(BASENAME).g4
