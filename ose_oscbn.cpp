@@ -58,9 +58,9 @@ public:
     }
 };
 
-void oscbn_parseOsc_impl(const char * const str,
-                                    const int32_t len,
-                                    ose_bundle bundle)
+static void oscbn_parseOsc_impl(const char * const str,
+                                const int32_t len,
+                                ose_bundle bundle)
 {
     ANTLRInputStream input(str, len);
     oscbnLexer lexer(&input);
@@ -84,6 +84,10 @@ void oscbn_parseOsc_impl(const char * const str,
     // cout << "nerrors: " << visitor->getNErrors() << "\n";
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void oscbn_parseOsc(ose_bundle bundle)
 {
     ose_assert(ose_bundleHasAtLeastNElems(bundle, 1) == OSETT_TRUE);
@@ -94,6 +98,9 @@ void oscbn_parseOsc(ose_bundle bundle)
     oscbn_parseOsc_impl(str, len, bundle);
 }
 
+/**************************************************
+ * pretty printing
+ **************************************************/
 #define INCP(bufp, amt) ((bufp) ? ((bufp) += (amt)) : (bufp))
 #define INCL(bufp, bufl, amt) ((bufp) ? ((bufl) -= (amt)) : (bufl))
 
@@ -102,10 +109,6 @@ static int32_t _oscbn_fmtBundle(ose_bundle bundle,
                                 char *buf,
                                 int32_t buflen,
                                 int32_t indent);
-
-/**************************************************
- * pretty printing
- **************************************************/
 
 static int32_t oscbn_fmtMessageAddr(ose_bundle bundle,
                                     int32_t offset,
@@ -293,7 +296,7 @@ static int32_t oscbn_fmtBundleElem(ose_bundle bundle,
         }
         else
         {
-            n = snprintf(bufp, bufl, "{\n\r");
+            n = snprintf(bufp, bufl, "{\n");
             nn += n;
             INCP(bufp, n);
             INCL(bufp, bufl, n);
@@ -313,7 +316,7 @@ static int32_t oscbn_fmtBundleElem(ose_bundle bundle,
                 indentstr[i] = ' ';
             }
             indentstr[indent] = 0;
-            n = snprintf(bufp, bufl, "\n\r%s}", indentstr);
+            n = snprintf(bufp, bufl, "\n%s}", indentstr);
             nn += n;
             INCP(bufp, n);
             INCL(buf, bufl, n);
@@ -368,7 +371,7 @@ static int32_t _oscbn_fmtBundle(ose_bundle bundle,
         offset += s + 4;
         if(o < ss)
         {
-            n = snprintf(bufp, bufl, ",\n\r");
+            n = snprintf(bufp, bufl, ",\n");
             INCP(bufp, n);
             INCL(bufp, bufl, n);
             nn += n;
@@ -377,49 +380,33 @@ static int32_t _oscbn_fmtBundle(ose_bundle bundle,
     return nn;
 }
 
-int32_t oscbn_printOscBundle_impl(char *buf,
-                                  int32_t buflen,
-                                  ose_bundle bundle_elem)
-{
-    return _oscbn_fmtBundle(bundle_elem, 0, buf, buflen, 0);
-}
-
-void oscbn_printOscBundle(ose_bundle bundle)
+static void oscbn_printOscBundle(ose_bundle bundle)
 {
     int32_t o = ose_getLastBundleElemOffset(bundle);
-    char *b = ose_getBundlePtr(bundle);
-    ose_bundle bb = ose_makeBundle(b + o + 4);
-    // int32_t len = oscbn_printOscBundle_impl(NULL, 0, bb);
     int32_t len = oscbn_fmtBundleElem(bundle, o, NULL, 0, 0);
     len = ose_pnbytes(len);
     ose_pushBlob(bundle, len, NULL);
     char *p = ose_peekBlob(bundle) + 4;
-    // oscbn_printOscBundle_impl(p, len, bb);
     oscbn_fmtBundleElem(bundle, o, p, len, 0);
     ose_pushInt32(bundle, OSETT_STRING);
     ose_blobToType(bundle);
 }
 
-void oscbn_printlnOscBundle(ose_bundle bundle)
+static void oscbn_printlnOscBundle(ose_bundle bundle)
 {
     int32_t o = ose_getLastBundleElemOffset(bundle);
-    char *b = ose_getBundlePtr(bundle);
-    ose_bundle bb = ose_makeBundle(b + o + 4);
-    //int32_t tlen = oscbn_printOscBundle_impl(NULL, 0, bb);
     int32_t tlen = oscbn_fmtBundleElem(bundle, o, NULL, 0, 0);
-    int32_t tnrlen = tlen + 2;                   // \n\r
+    int32_t tnrlen = tlen + 1;                   // \n
     int32_t ptnrlen = ose_pnbytes(tnrlen);
     ose_pushBlob(bundle, ptnrlen, NULL);
     char *p = ose_peekBlob(bundle) + 4;
-    //oscbn_printOscBundle_impl(p, ptnrlen, bb);
     oscbn_fmtBundleElem(bundle, o, p, ptnrlen, 0);
     p[tlen] = '\n';
-    p[tlen + 1] = '\r';
     ose_pushInt32(bundle, OSETT_STRING);
     ose_blobToType(bundle);
 }
 
-void oscbn_printOscMessage(ose_bundle bundle)
+static void oscbn_printOscMessage(ose_bundle bundle)
 {
     int32_t o = ose_getLastBundleElemOffset(bundle);
     int32_t len = oscbn_fmtBundleElem_msg(bundle, o, NULL, 0, 0);
@@ -431,17 +418,16 @@ void oscbn_printOscMessage(ose_bundle bundle)
     ose_blobToType(bundle);
 }
 
-void oscbn_printlnOscMessage(ose_bundle bundle)
+static void oscbn_printlnOscMessage(ose_bundle bundle)
 {
     int32_t o = ose_getLastBundleElemOffset(bundle);
     int32_t tlen = oscbn_fmtBundleElem_msg(bundle, o, NULL, 0, 0);
-    int32_t tnrlen = tlen + 2;  // \n\r
+    int32_t tnrlen = tlen + 1;  // \n
     int32_t ptnrlen = ose_pnbytes(tnrlen);
     ose_pushBlob(bundle, ptnrlen, NULL);
     char *p = ose_peekBlob(bundle) + 4;
     oscbn_fmtBundleElem_msg(bundle, o, p, ptnrlen, 0);
     p[tlen] = '\n';
-    p[tlen + 1] = '\r';
     ose_pushInt32(bundle, OSETT_STRING);
     ose_blobToType(bundle);
 }
@@ -449,14 +435,14 @@ void oscbn_printlnOscMessage(ose_bundle bundle)
 // module
 #include "ose_vm.h"
 
-static void oscbn_parse(ose_bundle osevm)
+void oscbn_parse(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);
     oscbn_parseOsc(vm_s);
     ose_nip(vm_s);
 }
 
-static void oscbn_print(ose_bundle osevm)
+void oscbn_print(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);
     char t = ose_peekType(vm_s);
@@ -474,12 +460,12 @@ static void oscbn_print(ose_bundle osevm)
     }
 }
 
-static void oscbn_println(ose_bundle osevm)
+void oscbn_println(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);
     if(ose_bundleHasAtLeastNElems(vm_s, 1) == OSETT_FALSE)
     {
-        ose_pushString(vm_s, "\n\r");
+        ose_pushString(vm_s, "\n");
         return;
     }
     char t = ose_peekType(vm_s);
@@ -496,8 +482,6 @@ static void oscbn_println(ose_bundle osevm)
         ose_assert(0 && "found something that is neither a bundle nor a message");
     }
 }
-
-extern "C" {
 
 void ose_main(ose_bundle osevm)
 {

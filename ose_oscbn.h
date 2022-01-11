@@ -1,12 +1,20 @@
+#ifndef OSE_OSCBN_H
+#define OSE_OSCBN_H
+
 #include "ose_conf.h"
 #include "ose.h"
 
-void oscbn_parseTopLevelBundle(ose_bundle bundle);
-void oscbn_printTopLevelBundle(ose_bundle bundle);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void oscbn_parseTopLevelBundle_impl(const char * const str,
-                                    const int32_t len,
-                                    ose_bundle bundle);
-int32_t oscbn_printTopLevelBundle_impl(char *buf,
-                                       int32_t buflen,
-                                       ose_bundle bundle_elem);
+void oscbn_parseOsc(ose_bundle bundle);
+void oscbn_parse(ose_bundle osevm);
+void oscbn_print(ose_bundle osevm);
+void oscbn_println(ose_bundle osevm);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
