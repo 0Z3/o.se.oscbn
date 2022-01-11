@@ -65,14 +65,12 @@ WILDCARD
    ;
 
 OSCADDRESS
-   //: '/'? VALIDADDRESSCHAR+ CONTAINER*
    : CONTAINER+
    ;
 
 fragment
 CONTAINER
-   //: '/' VALIDADDRESSCHAR+
-   : '/' VALIDADDRESSCHAR+
+   : '/' VALIDADDRESSCHAR*
    ;
 
 fragment
