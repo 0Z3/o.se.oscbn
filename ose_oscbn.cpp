@@ -95,7 +95,14 @@ void oscbn_parseOsc(ose_bundle bundle)
     ose_assert(ose_isStringType(ose_peekMessageArgType(bundle)) == OSETT_TRUE);
     const char * const str = ose_peekString(bundle);
     const int32_t len = strlen(str);
-    oscbn_parseOsc_impl(str, len, bundle);
+    if(len == 0)
+    {
+        ose_pushBundle(bundle);
+    }
+    else
+    {
+        oscbn_parseOsc_impl(str, len, bundle);
+    }
 }
 
 /**************************************************
