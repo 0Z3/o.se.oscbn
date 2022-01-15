@@ -7,7 +7,10 @@
 #include "ose_conf.h"
 #include "ose.h"
 
-class  oscbnVisitorImpl : oscbnVisitor {
+namespace oscbn {
+    
+class  oscbnVisitorImpl : oscbnVisitor
+{
  private:
 	ose_bundle bundle;
     int nerrors;
@@ -31,3 +34,4 @@ class  oscbnVisitorImpl : oscbnVisitor {
 	ose_bundle getBundle();
 };
 
+}

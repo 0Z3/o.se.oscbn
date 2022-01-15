@@ -7,6 +7,7 @@
 #include "antlr4-runtime.h"
 
 
+namespace oscbn {
 
 
 class  oscbnLexer : public antlr4::Lexer {
@@ -56,3 +57,4 @@ private:
   static Initializer _init;
 };
 
+}  // namespace oscbn

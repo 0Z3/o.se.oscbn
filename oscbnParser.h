@@ -7,6 +7,7 @@
 #include "antlr4-runtime.h"
 
 
+namespace oscbn {
 
 
 class  oscbnParser : public antlr4::Parser {
@@ -222,3 +223,4 @@ private:
   static Initializer _init;
 };
 
+}  // namespace oscbn

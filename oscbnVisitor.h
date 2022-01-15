@@ -8,6 +8,7 @@
 #include "oscbnParser.h"
 
 
+namespace oscbn {
 
 /**
  * This class defines an abstract visitor for a parse tree
@@ -40,3 +41,4 @@ public:
 
 };
 
+}  // namespace oscbn

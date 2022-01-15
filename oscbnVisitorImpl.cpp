@@ -15,6 +15,7 @@
 using namespace std;
 using namespace antlr4;
 using namespace antlrcpp;
+using namespace oscbn;
 
 int oscbnVisitorImpl::getNErrors()
 {

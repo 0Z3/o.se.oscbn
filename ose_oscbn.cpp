@@ -13,6 +13,7 @@
 using namespace std;
 using namespace antlr4;
 using namespace antlrcpp;
+using namespace oscbn;
 
 class ParserErrorListener : public BaseErrorListener {
 private:
@@ -490,6 +491,7 @@ void oscbn_println(ose_bundle osevm)
     }
 }
 
+__attribute__((visibility("default")))
 void ose_main(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);

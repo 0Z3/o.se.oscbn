@@ -8,6 +8,7 @@
 
 
 using namespace antlrcpp;
+using namespace oscbn;
 using namespace antlr4;
 
 oscbnParser::oscbnParser(TokenStream *input) : Parser(input) {

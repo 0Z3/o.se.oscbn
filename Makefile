@@ -28,11 +28,17 @@ INCLUDES=-I. -I$(OSE_DIR) -I$(ANTLR4_INCLUDE_DIR)
 
 DEFINES=-DHAVE_OSE_ENDIAN_H
 
-CFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb
-CFLAGS_RELEASE=-Wall -O3
+CFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb -fPIC
+CFLAGS_RELEASE=-Wall -O3 -fPIC
 
-CPPFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb --std=c++17
-CPPFLAGS_RELEASE=-Wall -O3 --std=c++17
+CPPFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb --std=c++17 -fPIC
+CPPFLAGS_RELEASE=-Wall -O3 --std=c++17 -fPIC
+
+ifeq ($(shell uname), Darwin)
+LDFLAGS=-fvisibility=hidden -shared -Wl,-exported_symbol,_ose_main
+else
+LDFLAGS=-fvisibility=hidden -shared
+endif
 
 release: CFLAGS=$(CFLAGS_RELEASE)
 release: CPPFLAGS=$(CPPFLAGS_RELEASE)
@@ -49,7 +55,7 @@ $(MOD_FILES:=.o): %.o: %.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 ose_$(BASENAME).so: $(OSE_FILES:=.o) $(MOD_FILES:=.o)
-	$(CPP) -shared -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
+	$(CPP) $(LDFLAGS) -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
 
 $(OSE_DIR)/sys/ose_endian.h:
 	cd $(OSE_DIR) && $(MAKE) sys/ose_endian.h
@@ -57,10 +63,13 @@ $(OSE_DIR)/sys/ose_endian.h:
 oscbntest: oscbntest.cpp $(OSE_FILES:=.o) $(MOD_FILES:=.o)
 	$(CPP) $(CPPFLAGS_DEBUG) $(INCLUDES) $(DEFINES) -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
 
-ANTLR4=java -jar /usr/local/lib/antlr-4.9.3-complete.jar
+ifndef ANTLR4
+ANTLR4=/usr/local/lib/antlr-4.9.3-complete.jar
+endif
+
 .PHONY: antlr
 antlr: 
-	$(ANTLR4) -Dlanguage=Cpp -visitor -no-listener $(BASENAME).g4
+	java -jar $(ANTLR4) -Dlanguage=Cpp -package oscbn -visitor -no-listener $(BASENAME).g4
 
 .PHONY: clean
 clean:
