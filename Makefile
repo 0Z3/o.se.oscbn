@@ -60,8 +60,8 @@ ose_$(BASENAME).so: $(OSE_FILES:=.o) $(MOD_FILES:=.o)
 $(OSE_DIR)/sys/ose_endian.h:
 	cd $(OSE_DIR) && $(MAKE) sys/ose_endian.h
 
-oscbntest: oscbntest.cpp $(OSE_FILES:=.o) $(MOD_FILES:=.o)
-	$(CPP) $(CPPFLAGS_DEBUG) $(INCLUDES) $(DEFINES) -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
+$(ANTLR4_INCLUDE_DIR):
+	cd ../lib && ./make_antlr4_Cpp_runtime.sh
 
 ifndef ANTLR4
 ANTLR4=/usr/local/lib/antlr-4.9.3-complete.jar
