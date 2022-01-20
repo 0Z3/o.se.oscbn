@@ -51,7 +51,7 @@ debug: ose_$(BASENAME).so
 $(OSE_FILES:=.o): %.o: $(OSE_DIR)/%.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $(notdir $@)
 
-$(MOD_FILES:=.o): %.o: %.cpp
+$(MOD_FILES:=.o): %.o: %.cpp $(ANTLR4_INCLUDE_DIR)
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 ose_$(BASENAME).so: $(OSE_FILES:=.o) $(MOD_FILES:=.o)
