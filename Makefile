@@ -4,7 +4,7 @@ G4=$(BASENAME:=.g4)
 CC=clang
 CPP=clang++
 
-OSE_DIR=../../..
+LIBOSE_DIR=../libose
 OSE_FILES=\
 	ose\
 	ose_util\
@@ -19,12 +19,12 @@ MOD_FILES=\
 	$(BASENAME)Parser\
 	ose_$(BASENAME)
 
-ANTLR4_DIR=../lib/antlr4
+ANTLR4_DIR=antlr4
 ANTLR4_RUNTIME_DIR=$(ANTLR4_DIR)/runtime/Cpp
 ANTLR4_INCLUDE_DIR=$(ANTLR4_RUNTIME_DIR)/run/usr/local/include/antlr4-runtime
 ANTLR4_LIB_DIR=$(ANTLR4_RUNTIME_DIR)/run/usr/local/lib
 
-INCLUDES=-I. -I$(OSE_DIR) -I$(ANTLR4_INCLUDE_DIR)
+INCLUDES=-I. -I$(LIBOSE_DIR) -I$(ANTLR4_INCLUDE_DIR)
 
 DEFINES=-DHAVE_OSE_ENDIAN_H
 
@@ -42,26 +42,26 @@ endif
 
 release: CFLAGS=$(CFLAGS_RELEASE)
 release: CPPFLAGS=$(CPPFLAGS_RELEASE)
-release: ose_$(BASENAME).so
+release: $(LIBOSE_DIR)/sys/ose_endian.h ose_$(BASENAME).so
 
 debug: CFLAGS=$(CFLAGS_DEBUG)
 debug: CPPFLAGS=$(CPPFLAGS_DEBUG)
-debug: ose_$(BASENAME).so
+debug: $(LIBOSE_DIR)/sys/ose_endian.h ose_$(BASENAME).so
 
-$(OSE_FILES:=.o): %.o: $(OSE_DIR)/%.c
+$(OSE_FILES:=.o): %.o: $(LIBOSE_DIR)/%.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $(notdir $@)
 
 $(MOD_FILES:=.o): %.o: %.cpp $(ANTLR4_INCLUDE_DIR)
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 ose_$(BASENAME).so: $(OSE_FILES:=.o) $(MOD_FILES:=.o)
-	$(CPP) $(LDFLAGS) -o $@ $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
+	$(CPP) $(LDFLAGS) -o o.se.$(BASENAME).so $^ $(ANTLR4_LIB_DIR)/libantlr4-runtime.a
 
-$(OSE_DIR)/sys/ose_endian.h:
-	cd $(OSE_DIR) && $(MAKE) sys/ose_endian.h
+$(LIBOSE_DIR)/sys/ose_endian.h:
+	cd $(LIBOSE_DIR) && $(MAKE) sys/ose_endian.h
 
 $(ANTLR4_INCLUDE_DIR):
-	cd ../lib && ./make_antlr4_Cpp_runtime.sh
+	./make_antlr4_Cpp_runtime.sh
 
 ifndef ANTLR4
 ANTLR4=/usr/local/lib/antlr-4.9.3-complete.jar
