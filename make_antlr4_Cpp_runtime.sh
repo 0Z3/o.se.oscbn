@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 antlr4_Cpp_runtime_dir="./antlr4/runtime/Cpp"
 build_dir="build"
