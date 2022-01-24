@@ -495,13 +495,16 @@ __attribute__((visibility("default")))
 void ose_main(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);
+    ose_pushBundle(vm_s);
     ose_pushMessage(vm_s, "/oscbn/parse", strlen("/oscbn/parse"),
                     1, OSETT_ALIGNEDPTR, oscbn_parse);
+    ose_push(vm_s);
     ose_pushMessage(vm_s, "/oscbn/print", strlen("/oscbn/print"),
                     1, OSETT_ALIGNEDPTR, oscbn_print);
+    ose_push(vm_s);
     ose_pushMessage(vm_s, "/oscbn/println", strlen("/oscbn/println"),
                     1, OSETT_ALIGNEDPTR, oscbn_println);
-    ose_bundleAll(vm_s);
+    ose_push(vm_s);
 }
 
 } // extern "C"
