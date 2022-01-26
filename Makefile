@@ -73,4 +73,4 @@ antlr:
 
 .PHONY: clean
 clean:
-	rm -rf *.o *.so
+	rm -rf *.o *.so *.interp *.tokens
