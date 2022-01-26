@@ -150,6 +150,7 @@ Any oscbnVisitorImpl::visitOscMessageItem(
         const std::string str = context->getText();
         const int32_t len = str.length();
         const std::string strq = str.substr(1, len - 2);
+        // process escapes here
         ose_pushString(bundle, strq.c_str());
     }
     else if(context->BLOB())
