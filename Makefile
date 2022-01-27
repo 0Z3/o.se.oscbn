@@ -1,8 +1,33 @@
+############################################################
+# Variables setable from the command line:
+#
+# CCOMPILER (default: clang)
+# CPPCOMPILER (default: clang++)
+# DEBUG_SYMBOLS (default: DWARF)
+# EXTRA_CFLAGS (default: none)
+# EXTRA_CPPFLAGS (default: none)
+############################################################
+
+ifndef CCOMPILER
+CC=clang
+else
+CC=$(CCOMPILER)
+endif
+
+ifndef CPPCOMPILER
+CPP=clang++
+else
+CPP=$(CPPCOMPILER)
+endif
+
+ifeq ($(OS),Windows_NT)
+OSNAME:=$(OS)
+else
+OSNAME:=$(shell uname -s)
+endif
+
 BASENAME=oscbn
 G4=$(BASENAME:=.g4)
-
-CC=clang
-CPP=clang++
 
 LIBOSE_DIR=../libose
 OSE_FILES=\
@@ -28,25 +53,33 @@ INCLUDES=-I. -I$(LIBOSE_DIR) -I$(ANTLR4_INCLUDE_DIR)
 
 DEFINES=-DHAVE_OSE_ENDIAN_H
 
-CFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb -fPIC
-CFLAGS_RELEASE=-Wall -O3 -fPIC
+CFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -g$(DEBUG_SYMBOLS) $(EXTRA_CFLAGS)
+CFLAGS_RELEASE=-Wall -O3 $(EXTRA_CFLAGS)
 
-CPPFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 -glldb --std=c++17 -fPIC
-CPPFLAGS_RELEASE=-Wall -O3 --std=c++17 -fPIC
+CPPFLAGS_DEBUG=-Wall -DOSE_CONF_DEBUG -O0 --std=c++17 -g$(DEBUG_SYMBOLS) $(EXTRA_CPPFLAGS)
+CPPFLAGS_RELEASE=-Wall -O3 --std=c++17 $(EXTRA_CPPFLAGS)
 
-ifeq ($(shell uname), Darwin)
+ifeq ($(OS),Darwin)
 LDFLAGS=-fvisibility=hidden -shared -Wl,-exported_symbol,_ose_main
+else ifeq ($(OS),Windows_NT)
+LDFLAGS=-shared
 else
 LDFLAGS=-fvisibility=hidden -shared
 endif
 
-release: CFLAGS=$(CFLAGS_RELEASE)
-release: CPPFLAGS=$(CPPFLAGS_RELEASE)
+release: CFLAGS+=$(CFLAGS_RELEASE)
+release: CPPFLAGS+=$(CPPFLAGS_RELEASE)
 release: $(LIBOSE_DIR)/sys/ose_endian.h ose_$(BASENAME).so
 
-debug: CFLAGS=$(CFLAGS_DEBUG)
-debug: CPPFLAGS=$(CPPFLAGS_DEBUG)
+debug: CFLAGS+=$(CFLAGS_DEBUG)
+debug: CPPFLAGS+=$(CPPFLAGS_DEBUG)
 debug: $(LIBOSE_DIR)/sys/ose_endian.h ose_$(BASENAME).so
+
+ifeq ($(OS),Windows_NT)
+else
+CFLAGS:=-fPIC
+CPPFLAGS:=-fPIC
+endif
 
 $(OSE_FILES:=.o): %.o: $(LIBOSE_DIR)/%.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $(notdir $@)
