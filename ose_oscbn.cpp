@@ -91,9 +91,9 @@ extern "C" {
 
 void oscbn_parseOsc(ose_bundle bundle)
 {
-    ose_assert(ose_bundleHasAtLeastNElems(bundle, 1) == OSETT_TRUE);
+    ose_assert(ose_bundleHasAtLeastNElems(bundle, 1));
     ose_assert(ose_peekType(bundle) == OSETT_MESSAGE);
-    ose_assert(ose_isStringType(ose_peekMessageArgType(bundle)) == OSETT_TRUE);
+    ose_assert(ose_isStringType(ose_peekMessageArgType(bundle)));
     const char * const str = ose_peekString(bundle);
     const int32_t len = strlen(str);
     if(len == 0)
@@ -252,7 +252,7 @@ static int32_t oscbn_fmtBundleElem_msg(ose_bundle bundle,
                 INCP(bufp, n);
                 INCL(bufp, bufl, n);
             }
-            if(ose_isKnownTypetag(tt) == OSETT_TRUE)
+            if(ose_isKnownTypetag(tt))
             {
                 plo += ose_getPayloadItemSize(bundle, tt, plo);
             }
@@ -261,6 +261,10 @@ static int32_t oscbn_fmtBundleElem_msg(ose_bundle bundle,
                 if(ose_readByte(bundle, tt + 1) == 0)
                 {
                     plo = offset + s + 4;
+                }
+                else
+                {
+                    break;
                 }
             }
             tto++;
@@ -345,7 +349,7 @@ static int32_t _oscbn_fmtBundle(ose_bundle bundle,
                                 int32_t buflen,
                                 int32_t indent)
 {
-    ose_assert(ose_isBundle(bundle) == OSETT_TRUE);
+    ose_assert(ose_isBundle(bundle));
     int32_t nn = 0;
     int32_t ss = ose_readInt32(bundle, offset - 4);
     char *bufp = buf;
@@ -471,7 +475,7 @@ void oscbn_print(ose_bundle osevm)
 void oscbn_println(ose_bundle osevm)
 {
     ose_bundle vm_s = OSEVM_STACK(osevm);
-    if(ose_bundleHasAtLeastNElems(vm_s, 1) == OSETT_FALSE)
+    if(!ose_bundleHasAtLeastNElems(vm_s, 1))
     {
         ose_pushString(vm_s, "\n");
         return;
