@@ -124,7 +124,7 @@ static int32_t oscbn_fmtMessageAddr(ose_bundle bundle,
                                     char *buf,
                                     int32_t buflen)
 {
-    char *addr = ose_readString(bundle, ao);
+    const char * const addr = ose_readString(bundle, ao);
     return snprintf(buf, buflen, "%s", addr);
 }
 
@@ -156,7 +156,7 @@ static int32_t oscbn_fmtMessageArg(ose_bundle bundle,
         int32_t nn = n;
         INCP(buf, n);
         INCL(buf, buflen, n);
-        char *p = ose_readString(bundle, plo + 4);
+        const char * const p = ose_readString(bundle, plo + 4);
         for(int k = 0; k < blobsize; k++){
             n = snprintf(buf, buflen, "%02X", p[k]);
             nn += n;
