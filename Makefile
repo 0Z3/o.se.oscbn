@@ -35,8 +35,7 @@ OSE_FILES=\
 	ose_util\
 	ose_stackops\
 	ose_match\
-	ose_context\
-	ose_assert
+	ose_context
 
 MOD_FILES=\
 	$(BASENAME)VisitorImpl\
