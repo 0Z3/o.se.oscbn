@@ -168,6 +168,10 @@ Any oscbnVisitorImpl::visitOscMessageItem(
             *bp++ = c;
         }
     }
+    else if(context->TIMETAG())
+    {
+#warning NOT IMPLEMENTED
+    }
     else if(context->oscBundle())
     {
         Any ret = visitChildren(context);

@@ -13,9 +13,9 @@ namespace oscbn {
 class  oscbnLexer : public antlr4::Lexer {
 public:
   enum {
-    OSCPATTERN = 1, OSCADDRESS = 2, INT32 = 3, FLOAT = 4, DigitSequence = 5, 
-    STRING = 6, BLOB = 7, BIND = 8, LBRACKET = 9, RBRACKET = 10, LBRACE = 11, 
-    RBRACE = 12, SEQSEP = 13, COMMENT = 14, WHITESPACE = 15
+    OSCPATTERN = 1, OSCADDRESS = 2, INT32 = 3, FLOAT = 4, Digit = 5, DigitSequence = 6, 
+    STRING = 7, BLOB = 8, TIMETAG = 9, BIND = 10, LBRACKET = 11, RBRACKET = 12, 
+    LBRACE = 13, RBRACE = 14, SEQSEP = 15, COMMENT = 16, WHITESPACE = 17
   };
 
   explicit oscbnLexer(antlr4::CharStream *input);

@@ -165,6 +165,12 @@ static int32_t oscbn_fmtMessageArg(ose_bundle bundle,
         }
         return nn;
     }
+#ifdef OSE_PROVIDE_TYPE_DOUBLE
+    case OSETT_DOUBLE:
+        return snprintf(buf, buflen,
+                        "%f",
+                        ose_readDouble(bundle, plo));
+#endif
     default:
     {
         return 0;

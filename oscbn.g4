@@ -44,6 +44,7 @@ oscMessageItem
    | FLOAT
    | STRING
    | BLOB
+   | TIMETAG
    | oscBundle
    ;
 
@@ -87,6 +88,10 @@ FLOAT
    ;
 
 //////////////////////////////////////////////////////////////////////
+
+Digit
+    :   [0-9]
+    ;
 
 fragment
 IntegerConstant
@@ -196,11 +201,6 @@ fragment
 FloatingSuffix
     :   'f' | 'l' | 'F' | 'L'
         ;
-	
-fragment
-Digit
-    :   [0-9]
-        ;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -225,6 +225,37 @@ STRING
 
 BLOB
    : 'b' (Digit Digit)*
+   ;
+
+fragment
+ISO8601Year : ([1-9][0-9]*)?[0-9][0-9][0-9][0-9] ;
+
+fragment
+ISO8601Month : ('1'[0-2]|'0'[1-9]) ;
+
+fragment
+ISO8601Day : ('3'[0-1]|'0'[1-9]|[1-2][0-9]) ;
+
+fragment
+ISO8601Date : '-'? ISO8601Year '-' ISO8601Month '-' ISO8601Day? ;
+
+fragment
+ISO8601Hour : ('2'[0-3]|[0-1][0-9]) ;
+
+fragment
+ISO8601Minute : ([0-5][0-9]) ;
+
+fragment
+ISO8601Second : ([0-5][0-9])('.'[0-9]+)?? ;
+
+fragment
+ISO8601FracSecond : ('Z'|[+-]('2'[0-3]|[0-1][0-9])':'[0-5][0-9])? ;
+
+fragment
+ISO8601Time : 'T' ISO8601Hour ':' ISO8601Minute ':' ISO8601Second ISO8601FracSecond ;
+        
+TIMETAG
+   : ISO8601Date ISO8601Time
    ;
 
 BIND
